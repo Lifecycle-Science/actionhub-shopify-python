@@ -2,3 +2,7 @@ from app import config_local
 
 SHOPIFY_CLIENT_ID = config_local.SHOPIFY_CLIENT_ID
 SHOPIFY_SECRET = config_local.SHOPIFY_SECRET
+AUTH_CALLBACK_URL = config_local.AUTH_CALLBACK_URL
+
+API_VERSION = "2022-07"
+
