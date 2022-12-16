@@ -17,8 +17,8 @@ redirect_uri = "https://66a3-47-144-146-221.ngrok.io/auth/callback"
 shopify.Session.setup(api_key=config.SHOPIFY_CLIENT_ID, secret=config.SHOPIFY_SECRET)
 
 
-shop_name = 're2-dev1'
-shop_url = "%s.myshopify.com" % shop_name
+shop = 're2-dev1'
+shop_url = "%s.myshopify.com" % shop
 
 api_version = '2022-07'
 state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")

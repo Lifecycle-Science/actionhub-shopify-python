@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exit iFrame</title>
+    <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
+    <script src="https://unpkg.com/@shopify/app-bridge-utils@3"></script>
+
+    <script>
+        var AppBridge = window['app-bridge'];
+        var createApp = AppBridge.default;
+        var actions = AppBridge.actions;
+        var Redirect = actions.Redirect;
+
+        const config = {
+            apiKey: '{{ client_id }}',
+            host: new URLSearchParams(location.search).get("host"),
+            forceRedirect: true
+        };
+
+        const app = createApp(config);
+        const redirectUri = "{{ redirect_url }}".replaceAll("&amp;", "&")
+        const url = new URL(decodeURIComponent(redirectUri));
+
+        if (url.hostname === location.hostname) {
+            const redirect = Redirect.create(app);
+            redirect.dispatch(
+                Redirect.Action.REMOTE,
+                decodeURIComponent(redirectUri)
+            );
+        }
+
+
+    </script>
+
+</head>
+<body>
+This page is supposed to be redirecting but it isn't and I can't figure out why.
+It's supposed to go here: {{ request.url }}
+</body>
+</html>
