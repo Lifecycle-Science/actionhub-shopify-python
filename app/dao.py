@@ -37,6 +37,29 @@ def select_shop(shop_name):
     return row
 
 
+def create_ix_shop(shop_name,
+                re2_program_id,
+                re2_api_key,
+                permissions):
+    """
+    Creates the shopify integration records
+    """
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("""
+        insert into re2_ix_shopify.dim_shops (
+            shop_name, 
+            re2_program_id,
+            re2_api_key,
+            permissions)
+        values (%s, %s, %s, %s)
+    """, [shop_name,
+          re2_program_id,
+          re2_api_key,
+          permissions])
+    conn.commit()
+
+
 def get_shop_access_token(shop: str):
     """Retrieve the store's access_token.
     Will return 404 if token not found.

@@ -12,6 +12,7 @@ from shopify import session_token
 
 from app import config
 from app import dao
+from app import shops
 
 # https://shopify.dev/apps/auth/oauth/getting-started
 
@@ -121,7 +122,7 @@ def verify_shop_access(request: Request):
 
         # get the authorization url
         # TODO: optimize this scopes part...
-        scopes = ['read_products', 'read_orders']
+        scopes = shops.SCOPES_STAGE_1
         state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
         auth_url = session.create_permission_url(scopes, config.AUTH_CALLBACK_URL, state)
 

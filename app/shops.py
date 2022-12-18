@@ -1,17 +1,24 @@
+import json
 import time
 import datetime
+import requests
 from app import dao
+from app import config
+
+
+SCOPES_STAGE_1 = ['read_products', 'read_orders']
 
 
 class ShopNotFound(Exception):
     pass
 
-
 class SlopAlreadyExists(Exception):
     pass
 
+class Re2ProgramAlreadyExists(Exception):
+    pass
 
-class Shop:
+class IxShop:
 
     ts_added: int = 0
     ts_updated: int = 0
@@ -51,13 +58,34 @@ class Shop:
         if self.loaded:
             raise SlopAlreadyExists
 
+        # create the RE2 program
+        # same as the shop. i.e. one shop = one program
 
-        dao.create_shop(
+        # host = "https://api.re2.live"
+        host = "http://localhost:8000"
+        resource = "/programs"
+        body = {
+            "program_name": self.shop_name,
+            "description": "Shopify shot: " + self.shop_name
+        }
+        headers = {
+            "access_token": config.RE2_API_KEY,
+            "program-id": config.RE2_API_PROGRAM
+        }
+        uri = host + resource
+        r = requests.post(uri, data=json.dumps(body), headers=headers)
+        if r.status_code == 401:
+            raise Re2ProgramAlreadyExists
+
+        program = json.loads(r.text)
+
+        self.re2_program_id = program["program_id"]
+        self.re2_api_key = program["api_key"]
+
+        dao.create_ix_shop(
             shop_name=self.shop_name,
             re2_program_id=self.re2_program_id,
             re2_api_key=self.re2_api_key,
-            permissions=self.permissions,
-            ts_added=self.ts_added,
-            ts_updated=self.ts_updated
+            permissions=self.permissions
         )
         pass

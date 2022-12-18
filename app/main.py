@@ -15,6 +15,7 @@ from typing import Union
 
 from app import config
 from app import auth
+from app import shops
 
 from shopify import session_token
 
@@ -77,16 +78,28 @@ async def auth_callback(
     For this call the shop was just approved the installation.
     """
     params = dict(request.query_params)
-    shop = params["shop"]
+    shop_name = params["shop"]
     host = params["host"]
     shopify.Session.setup(
         api_key=config.SHOPIFY_CLIENT_ID,
         secret=config.SHOPIFY_SECRET
     )
-    session = shopify.Session(shop, config.API_VERSION)
+    session = shopify.Session(shop_name, config.API_VERSION)
     access_token = session.request_token(params)
 
-    auth.save_shop_access_token(shop, access_token)
+    auth.save_shop_access_token(shop_name, access_token)
+
+    # create the new shop program
+    ix_shop = shops.IxShop.new(shop_name, shops.SCOPES_STAGE_1)
+    try:
+        ix_shop.add()
+    except shops.Re2ProgramAlreadyExists:
+        # TODO: implement app uninstall webhooks to clean out RE2 data
+        return """
+            The is already an RE2 program registered for this store.
+            This could be the result of uninstalling and reinstalling the app.
+            <b>To be implemented: app uninstall webhooks to clean up RE2 programs</b>
+        """
 
     host_decoded = base64.b64decode(host + "===").decode("ascii")
     redirect_url = "https://%s/apps/%s/" % (host_decoded, config.SHOPIFY_CLIENT_ID)
