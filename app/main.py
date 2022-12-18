@@ -1,3 +1,4 @@
+import base64
 import binascii
 import os
 import shopify
@@ -15,9 +16,84 @@ from typing import Union
 from app import config
 from app import auth
 
+from shopify import session_token
+
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+
+@app.get("/",
+         dependencies=[Depends(auth.verify_shop_access)])
+async def home(
+        request: Request,
+        response: Response):
+    """
+    This method just delivers the scaffolding for the rest of the app which is called
+    from the client using the authenticated app-bridge. It also will kick off the app
+    approval oauth flow via the "verify_shop_access" dependency.
+
+    The calling uri follows the format:
+    https://[tunnel_url]?shop=[dev_store].myshopify.com&host=[host],
+    where [host] is the base64-encoded host parameter used by App Bridge,
+    and represents the container the app is running in.
+    (According to this guide: https://shopify.dev/apps/getting-started/create)
+    """
+    params = dict(request.query_params)
+    shop = params["shop"]
+    response.headers["Content-Security-Policy"] = "frame-ancestors https://%s https://admin.shopify.com;" % shop
+
+    return templates.TemplateResponse(
+        "main.html",{"request": request, "client_id": config.SHOPIFY_CLIENT_ID}
+    )
+
+
+@app.get("/test_client")
+async def test_client(
+        session: shopify.Session = Depends(auth.get_session_from_client_token)):
+    shopify.ShopifyResource.activate_session(session)
+    shop_name = session.url
+
+    product = shopify.Product.find("8049048289594")  # Get a specific product
+
+    print(product)
+    return session.token
+
+
+# -------------------------------------------------------------
+# AUTHENTICATION
+# -------------------------------------------------------------
+
+
+@app.get("/auth/callback")
+async def auth_callback(
+        request: Request):
+    """
+    This is destination of the post-approval redirect from Shopify.
+    This function will obtain the access key from Shopify and
+    save it on our end for future use.
+
+    For this call the shop was just approved the installation.
+    """
+    params = dict(request.query_params)
+    shop = params["shop"]
+    host = params["host"]
+    shopify.Session.setup(
+        api_key=config.SHOPIFY_CLIENT_ID,
+        secret=config.SHOPIFY_SECRET
+    )
+    session = shopify.Session(shop, config.API_VERSION)
+    access_token = session.request_token(params)
+
+    auth.save_shop_access_token(shop, access_token)
+
+    host_decoded = base64.b64decode(host + "===").decode("ascii")
+    redirect_url = "https://%s/apps/%s/" % (host_decoded, config.SHOPIFY_CLIENT_ID)
+
+    # Now that we have the token stored we will redirect
+    # back to our embedded app main page to load the scaffolding
+    return RedirectResponse(redirect_url)
 
 
 @app.exception_handler(auth.EmbeddedAuthRedirectException)
@@ -42,43 +118,3 @@ async def embedded_auth_redirect_exception_handler(
         exc.redirect_to,
         {"request": request, "redirect_url": redirect_url, "client_id": config.SHOPIFY_CLIENT_ID}
     )
-
-
-@app.get("/")
-async def home(
-        request: Request,
-        response: Response,
-        response_class=HTMLResponse,
-        access_token: str = Depends(auth.get_access_token)):
-    """
-    The URL follows the format https://[tunnel_url]?shop=[dev_store].myshopify.com&host=[host],
-    where [host] is the base64-encoded host parameter used by App Bridge,
-    and represents the container the app is running in.
-    (According to this guide: https://shopify.dev/apps/getting-started/create)
-    """
-    params = dict(request.query_params)
-    shop = params["shop"]
-
-    # only add this if not doing a redirect...
-    response.headers["Content-Security-Policy"] = "frame-ancestors https://%s https://admin.shopify.com;" % shop
-
-    return {"message": access_token}
-
-
-@app.get("/auth/callback")
-async def auth_callback(
-        request: Request,
-        response: Response):
-
-    params = dict(request.query_params)
-    shop = params["shop"]
-    shopify.Session.setup(
-        api_key=config.SHOPIFY_CLIENT_ID,
-        secret=config.SHOPIFY_SECRET
-    )
-    session = shopify.Session(shop, config.API_VERSION)
-    access_token = session.request_token(params)
-
-    auth.save_shop_access_token(shop, access_token)
-
-    return RedirectResponse("/?")
