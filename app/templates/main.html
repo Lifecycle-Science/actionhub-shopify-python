@@ -6,29 +6,22 @@
     <link rel="stylesheet" href="https://unpkg.com/@shopify/polaris@10.16.1/build/esm/styles.css" />
     <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
     <script src="https://unpkg.com/@shopify/app-bridge-utils@3"></script>
+    <script src="/js/config.js?hmac={{ hmac }}"></script>
+    <script src="/static/js/main.js"></script>
     <script>
-        var AppBridge = window['app-bridge'];
-        var createApp = AppBridge.default;
-        var actions = AppBridge.actions;
-        var Redirect = actions.Redirect;
-
-        const config = {
-            apiKey: '{{ client_id }}',
-            host: new URLSearchParams(location.search).get("host"),
-            forceRedirect: false
-        };
-
-        const app = createApp(config);
-        const authenticatedFetch = window['app-bridge-utils'].authenticatedFetch
-        var url = "/test_client"
-        authenticatedFetch(app)(url)
-                .then((response) => response.json())
-                .then((data) => console.log(data));
+    function callhome() {
+      const authenticatedFetch = window['app-bridge-utils'].authenticatedFetch
+      const app = createApp(config);
+      var url = "/test_client"
+      authenticatedFetch(app)(url)
+              .then((response) => response.json())
+              .then((data) => console.log(data));
+    }
 
     </script>
 
 </head>
-<body>
+<body onload="callhome()">
 <div class="Polaris-Page">
 
 <div class="Polaris-TextContainer">
@@ -65,6 +58,8 @@
   <div class="Polaris-Card__Section">
     <p>View a summary of your online store’s performance.</p>
     <div id="re2response"></div>
+    <div>
+    </div>
   </div>
 </div>
 

@@ -1,4 +1,5 @@
 import base64
+from urllib.parse import parse_qs
 import binascii
 import os
 import shopify
@@ -42,11 +43,15 @@ async def home(
     (According to this guide: https://shopify.dev/apps/getting-started/create)
     """
     params = dict(request.query_params)
+    hmac = params["hmac"]
     shop = params["shop"]
     response.headers["Content-Security-Policy"] = "frame-ancestors https://%s https://admin.shopify.com;" % shop
 
     return templates.TemplateResponse(
-        "main.html",{"request": request, "client_id": config.SHOPIFY_CLIENT_ID}
+        "main.html",{
+            "request": request,
+            "client_id": config.SHOPIFY_CLIENT_ID,
+            "hmac": hmac}
     )
 
 
@@ -54,12 +59,37 @@ async def home(
 async def test_client(
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
     shopify.ShopifyResource.activate_session(session)
+
+    # do something here...
     shop_name = session.url
 
     product = shopify.Product.find("8049048289594")  # Get a specific product
 
     print(product)
     return session.token
+
+
+# -------------------------------------------------------------
+# DYNAMIC AUTHENTICATION
+# -------------------------------------------------------------
+
+
+@app.get("/js/config.js")
+async def js_config(
+        hmac: str,
+        request: Request,):
+    try:
+        referer = request.headers["referer"]
+    except KeyError:
+        return {"config": ""}
+
+    referer_hmac = parse_qs(referer)["hmac"][0]
+    if referer_hmac != hmac:
+        return "invalid session"
+
+    return templates.TemplateResponse(
+        "config.js", {"request": request, "client_id": config.SHOPIFY_CLIENT_ID}
+    )
 
 
 # -------------------------------------------------------------
