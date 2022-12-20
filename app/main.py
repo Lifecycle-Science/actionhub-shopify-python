@@ -1,4 +1,5 @@
 import base64
+import json
 from urllib.parse import parse_qs
 import binascii
 import os
@@ -112,7 +113,7 @@ async def test_client(
                 "user_id": str(customer_id),
                 "event_timestamp": created_at,
                 "event_type": "order",
-                "asset_id": product_id,
+                "asset_id": str(product_id)
             })
 
         query = graphql_queries.get_order_customer_journey_gql
@@ -120,9 +121,24 @@ async def test_client(
         result = shopify.GraphQL().execute(
             query=query
         )
-        print(result)
-        r = result["data"]["Order"]["customerJourneySummary"]
-        print (r)
+        r = json.loads(result)
+        customer_journey = r["data"]["order"]["customerJourneySummary"]
+        if customer_journey["firstVisit"]:
+            first_lp = customer_journey["firstVisit"]["landingPage"]
+            events.append({
+                "user_id": str(customer_id),
+                "event_timestamp": created_at,
+                "event_type": "visit",
+                "asset_id": first_lp
+            })
+        if customer_journey["lastVisit"]:
+            last_lp = customer_journey["lastVisit"]["landingPage"]
+            events.append({
+                "user_id": str(customer_id),
+                "event_timestamp": created_at,
+                "event_type": "visit",
+                "asset_id": last_lp
+            })
         print(order.customer.id)
 
     return {"assets": assets, "events": events}
