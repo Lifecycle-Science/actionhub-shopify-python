@@ -3,91 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Exit iFrame</title>
-    <link rel="stylesheet" href="https://unpkg.com/@shopify/polaris@10.16.1/build/esm/styles.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@shopify/polaris@10.16.1/build/esm/styles.css"/>
     <script src="https://unpkg.com/@shopify/app-bridge@3"></script>
     <script src="https://unpkg.com/@shopify/app-bridge-utils@3"></script>
     <script src="/js/config.js?hmac={{ hmac }}"></script>
     <script src="/static/js/main.js?hmac={{ hmac }}"></script>
 
 </head>
-<body>
+<body onload="initApp()">
 <div class="Polaris-Page">
 
-<div class="Polaris-TextContainer">
-  <div class="Polaris-Stack Polaris-Stack--vertical">
-    <div class="Polaris-Card__Section">
-    <p>View a summary of your online store’s performance.</p>
-    <div id="re2response"></div>
-    <div>
-      <button onclick="callHome();">
-        Call Home
-      </button>
-      <button onclick="authRedirect('/scope/read_product_listings');">
-        Approve Read Product Listings
-      </button>
+    <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingLoose">
+            <div class="Polaris-Stack__Item">
+
+    <div class="Polaris-Card">
+        <div class="Polaris-Card__Section">
+            <p>View a summary of your online store’s performance.</p>
+            <div id="re2response"></div>
+            <div>
+                <button onclick="callHome();">
+                    Call Home
+                </button>
+                <button onclick="authRedirect('/scope/read_product_listings');">
+                    Approve Read Product Listings
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h1 class="Polaris-Text--root Polaris-Text--heading4xl Polaris-Text--bold">Online store dashboard</h1>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h2 class="Polaris-Text--root Polaris-Text--heading3xl Polaris-Text--semibold">Online store dashboard</h2>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h3 class="Polaris-Text--root Polaris-Text--heading2xl Polaris-Text--semibold">Online store dashboard</h3>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h4 class="Polaris-Text--root Polaris-Text--headingXl Polaris-Text--semibold">Online store dashboard</h4>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h5 class="Polaris-Text--root Polaris-Text--headingLg Polaris-Text--semibold">Online store dashboard</h5>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h6 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Online store dashboard</h6>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h6 class="Polaris-Text--root Polaris-Text--headingSm Polaris-Text--semibold">Online store dashboard</h6>
-  </div>
-  <div class="Polaris-Stack__Item">
-    <h6 class="Polaris-Text--root Polaris-Text--headingXs Polaris-Text--semibold">Online store dashboard</h6>
-  </div>
-</div>
-   <div class="Polaris-Card">
-  <div class="Polaris-Card__Header">
-    <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">{{ session_token }}</h2>
-  </div>
 
-</div>
+            </div>
+            <div class="Polaris-Stack__Item">
 
+    <div id="divRe2ProgramDetails"></div>
 
-  <div class="Polaris-Card">
-  <div class="Polaris-Card__Header">
-    <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Online store dashboard</h2>
-  </div>
-  <div class="Polaris-Card__Section">
-    <p>View a summary of your online store’s performance.</p>
-  </div>
-</div>
+            </div>
+    </div>
 
-
-  <div class="Polaris-Card">
-  <div class="Polaris-Card__Header">
-    <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Online store dashboard</h2>
-  </div>
-  <div class="Polaris-Card__Section">
-    <p>View a summary of your online store’s performance.</p>
-  </div>
-</div>
-  <div class="Polaris-Card">
-  <div class="Polaris-Card__Header">
-    <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Online store dashboard</h2>
-  </div>
-  <div class="Polaris-Card__Section">
-    <p>View a summary of your online store’s performance.</p>
-  </div>
-</div>
-</div>
-
-
-</div></body>
+</body>
 </html>

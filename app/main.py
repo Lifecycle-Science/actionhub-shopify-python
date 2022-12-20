@@ -57,6 +57,24 @@ async def home(
     )
 
 
+@app.get('/re2/program')
+async def get_re2_program(
+        request: Request,
+        session: shopify.Session = Depends(auth.get_session_from_client_token)):
+    """
+    Return the HTML with program details
+    """
+    shopify.ShopifyResource.activate_session(session)
+    shop_name = session.url
+    re2shop = shops.Re2Shop(shop_name)
+    re2shop.load()
+    template_file = "re2_program_details.html"
+    return templates.TemplateResponse(
+        template_file, {"request": request, "re2shop": re2shop}
+    )
+
+
+
 @app.put("/product/assets")
 async def refresh_product_assets(
         request: Request,
@@ -74,6 +92,7 @@ async def refresh_product_assets(
     pass
 
 
+# TODO: turn this into the "populate re2 method"
 @app.get("/test_client")
 async def test_client(
         request: Request,
