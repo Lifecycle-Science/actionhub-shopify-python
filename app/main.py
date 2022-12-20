@@ -17,6 +17,7 @@ from typing import Union
 from app import config
 from app import auth
 from app import shops
+from app import graphql_queries
 
 from shopify import session_token
 
@@ -55,22 +56,80 @@ async def home(
     )
 
 
+@app.put("/product/assets")
+async def refresh_product_assets(
+        request: Request,
+        session: shopify.Session = Depends(auth.get_session_from_client_token)):
+    """
+    Update the RE2 assets with the latest products
+    """
+    shopify.ShopifyResource.activate_session(session)
+    shop_name = session.url
+
+    re2shop = shops.use_shop(shop_name)
+    #if "read_product_listings" not in re2shop.permissions:
+       # auth.send_request_permission_redirect(request, "read_product_listings")
+
+    pass
+
+
 @app.get("/test_client")
 async def test_client(
+        request: Request,
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
     shopify.ShopifyResource.activate_session(session)
-
     # do something here...
     shop_name = session.url
 
-    product = shopify.Product.find("8049048289594")  # Get a specific product
+    assets = []
+    products = shopify.Product.find()  # empty find gets all products
+    for product in products:
+        labels = []
+        if product.tags:
+            labels += product.tags
 
-    print(product)
-    return session.token
+        if product.product_type:
+            labels.append(product.product_type)
+
+        if product.vendor:
+            labels.append(product.vendor)
+
+        assets.append({
+            "asset_id": product.id,
+            "asset_name": product.title,
+            "labels": labels
+        })
+
+    events = []
+    orders = shopify.Order.find()
+    print(orders)
+    for order in orders:
+        customer_id = order.customer.id
+        created_at = order.created_at
+        for item in order.line_items:
+            product_id = item.product_id
+            events.append({
+                "user_id": str(customer_id),
+                "event_timestamp": created_at,
+                "event_type": "order",
+                "asset_id": product_id,
+            })
+
+        query = graphql_queries.get_order_customer_journey_gql
+        query = query.format(order_id=order.id)
+        result = shopify.GraphQL().execute(
+            query=query
+        )
+        print(result)
+        r = result["data"]["Order"]["customerJourneySummary"]
+        print (r)
+        print(order.customer.id)
+
+    return {"assets": assets, "events": events}
 
 
 # -------------------------------------------------------------
-# DYNAMIC AUTHENTICATION
+# JAVASCRIPT PROTECTION
 # -------------------------------------------------------------
 
 
@@ -107,36 +166,30 @@ async def auth_callback(
 
     For this call the shop was just approved the installation.
     """
-    params = dict(request.query_params)
-    shop_name = params["shop"]
-    host = params["host"]
+    query_params = dict(request.query_params)
+    shop_name = query_params["shop"]
     shopify.Session.setup(
         api_key=config.SHOPIFY_CLIENT_ID,
         secret=config.SHOPIFY_SECRET
     )
     session = shopify.Session(shop_name, config.API_VERSION)
-    access_token = session.request_token(params)
+    access_token = session.request_token(query_params)
+    scopes = str(session.access_scopes).split(',')
 
-    auth.save_shop_access_token(shop_name, access_token)
-
-    # create the new shop program
-    ix_shop = shops.IxShop.new(shop_name, shops.SCOPES_STAGE_1)
+    re2shop = shops.Re2Shop(shop_name)
     try:
-        ix_shop.add()
-    except shops.Re2ProgramAlreadyExists:
-        # TODO: implement app uninstall webhooks to clean out RE2 data
-        return """
-            The is already an RE2 program registered for this store.
-            This could be the result of uninstalling and reinstalling the app.
-            <b>To be implemented: app uninstall webhooks to clean up RE2 programs</b>
-        """
-
-    host_decoded = base64.b64decode(host + "===").decode("ascii")
-    redirect_url = "https://%s/apps/%s/" % (host_decoded, config.SHOPIFY_CLIENT_ID)
+        re2shop.load()
+        auth.save_shop_access_token(
+            shop_name,
+            access_token,
+            scopes)
+    except shops.ShopNotFound:
+        re2shop = shops.Re2Shop.new(shop_name, scopes)
+        re2shop.add()
 
     # Now that we have the token stored we will redirect
     # back to our embedded app main page to load the scaffolding
-    return RedirectResponse(redirect_url)
+    return RedirectResponse(shopify_app_url(query_params))
 
 
 @app.exception_handler(auth.EmbeddedAuthRedirectException)
@@ -147,6 +200,45 @@ async def embedded_auth_redirect_exception_handler(
     We can't redirect to the auth page until we pop out of the Shopify iframe.
     *This exception is thrown by the auth.get_access_token process.*
     """
+    redirect_url = disembedded_app_url(request, resource="/")
+    print("redirect_url", redirect_url)
+    return templates.TemplateResponse(
+        exc.redirect_to,
+        {"request": request, "redirect_url": redirect_url, "client_id": config.SHOPIFY_CLIENT_ID}
+    )
+
+
+@app.get("/scope/read_product_listings", dependencies=[Depends(auth.verify_shop_access)])
+async def home(request: Request):
+    """If we're here then we have permission, return to home
+    """
+    return RedirectResponse(shopify_app_url(dict(request.query_params)))
+
+
+# -------------------------------------------------------------
+# UTILS
+# -------------------------------------------------------------
+
+
+def send_request_permission_redirect(request: Request, scope):
+    resource = "/scope/" + scope
+    # redirect_url = disembedded_app_url(request, resource=resource)
+    return {"request_scope": True, "request_scope_resource": resource}
+
+
+def shopify_app_url(query_params):
+    """Returns the top window url that is the shopify app wrapper,
+    which loads the app in its iframe.
+    """
+    host = query_params["host"]
+    host_decoded = base64.b64decode(host + "===").decode("ascii")
+    return "https://%s/apps/%s/" % (host_decoded, config.SHOPIFY_CLIENT_ID)
+
+
+def disembedded_app_url(request, resource="/"):
+    """Returns the RE2 url without the "embedded" flag so can
+    do an auth redirect if necessary.
+    """
     query_params_in = dict(request.query_params)
     query_params_in.pop('embedded')
 
@@ -155,9 +247,5 @@ async def embedded_auth_redirect_exception_handler(
         '%s=%s' % (key, value)
         for key, value in sorted(query_params_in.items())
     ])
-    redirect_url = "https://" + request.url.hostname + "?" + query_params_out
+    return "https://" + request.url.hostname + resource + "?" + query_params_out
 
-    return templates.TemplateResponse(
-        exc.redirect_to,
-        {"request": request, "redirect_url": redirect_url, "client_id": config.SHOPIFY_CLIENT_ID}
-    )

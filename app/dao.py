@@ -60,6 +60,22 @@ def create_ix_shop(shop_name,
     conn.commit()
 
 
+def update_ix_shop_permission(
+        shop_name,
+        permissions):
+    """
+    Creates the shopify integration records
+    """
+    conn = get_db_connection()
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cur.execute("""
+        update re2_ix_shopify.dim_shops 
+        set permissions = %s, ts_updated = current_timestamp
+        where shop_name = %s
+    """, [permissions, shop_name])
+    conn.commit()
+
+
 def get_shop_access_token(shop: str):
     """Retrieve the store's access_token.
     Will return 404 if token not found.

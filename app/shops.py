@@ -8,17 +8,33 @@ from app import config
 
 SCOPES_STAGE_1 = ['read_products', 'read_orders']
 
+shops = {}
+
+
+def use_shop(shop_name):
+    """
+    Keeps in memory collection of shops for easy access.
+    """
+    if shop_name not in shops:
+        re2shop = Re2Shop(shop_name)
+        re2shop.load()
+        shops[shop_name] = re2shop
+    return shops[shop_name]
+
 
 class ShopNotFound(Exception):
     pass
 
+
 class SlopAlreadyExists(Exception):
     pass
+
 
 class Re2ProgramAlreadyExists(Exception):
     pass
 
-class IxShop:
+
+class Re2Shop:
 
     ts_added: int = 0
     ts_updated: int = 0
@@ -34,7 +50,7 @@ class IxShop:
         shop = dao.select_shop(self.shop_name)
         if shop:
             self.ts_added = shop["ts_added"]
-            self.ts_updated = shop["ts_updates"]
+            self.ts_updated = shop["ts_updated"]
             self.re2_program_id = shop["re2_program_id"]
             self.re2_api_key = shop["re2_api_key"]
             self.permissions = shop["permissions"]
@@ -53,6 +69,10 @@ class IxShop:
         cls.ts_added = int(time.mktime(datetime.datetime.now().timetuple()))
         cls.ts_updated = int(time.mktime(datetime.datetime.now().timetuple()))
         return cls(shop_name)
+
+    def add_scope(self, scope):
+        self.permissions.append(scope)
+        dao.update_ix_shop_permission(self.shop_name, self.permissions)
 
     def add(self):
         if self.loaded:

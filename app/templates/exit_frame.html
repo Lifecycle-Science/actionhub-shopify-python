@@ -35,7 +35,12 @@
 
 </head>
 <body>
-This page is supposed to be redirecting but it isn't and I can't figure out why.
-It's supposed to go here: {{ request.url }}
+<!--
+This page loads in the app iframe and calls the AppBridge Redirect
+to redirect the top window (outer frame) to the redirect_url,
+which will just be the /home url with the embedded flag removed.
+
+Form there the home url will redirect to the auth_utl
+-->
 </body>
 </html>
