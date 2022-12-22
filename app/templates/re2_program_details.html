@@ -1,77 +1,215 @@
-<div class="Polaris-Card">
-    <div class="Polaris-Card__Header">
-        <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Advanced: RE2 Program Access
-            Information</h2>
-    </div>
-    <div class="Polaris-Card__Section">
+<div class="Polaris-Layout">
+
+    <div class="Polaris-Layout__Section  Polaris-Layout__Section--oneHalf">
 
 
-        <p>This information is for technical users looking to use RE2 to integrate
-            with their Shopify targeting recommendations to other marketing automation systems.
-            Learn more infomration about the RE2 API and integrated systems at
-            <a class="Polaris-Link" href="https://api.re2.live/" target="_blank">https://api.re2.live/</a>
-            Connect to the RE2 API using the credentials below.
-        </p>
+        <div class="Polaris-Card">
+            <div class="Polaris-Card__Header">
+                <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Advanced: RE2
+                    Program Configuration</h2>
+            </div>
+            <div class="Polaris-Card__Section">
+                <p>Most merchants will not need to make changes to these settings.
+                    If you'd like to learn more about how you can use these settings to
+                    optimize the performance
+                    or your RE2 program, check out
+                    <a class="Polaris-Link" href="https://calendly.com/lifecyclescience/30min" target="_blank">the
+                        program documentation</a>,
+                    or feel free to
+                    <a class="Polaris-Link" href="https://calendly.com/lifecyclescience/30min" target="_blank">
+                        schedule time with our support team</a>.</p>
+            </div>
+            <div class="Polaris-Card__Section">
 
-    </div>
 
-    <div class="Polaris-Card__Section">
-        <div class="Polaris-Card__SectionHeader">
-            <h3 class="Polaris-Text--root Polaris-Text--headingSm Polaris-Text--semibold">Your RE2 API Key</h3>
+                <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingLoose">
+                    <div class="Polaris-Stack__Item">
+
+                        <div class="Polaris-Labelled__LabelWrapper">
+                            <div class="Polaris-Label">
+                                <label id="PolarisTextField1Label" for="txtHighEngagementThreshold" class="Polaris-Label__Text">
+        <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular">High Engagement
+                        Threshold</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="Polaris-Connected">
+                            <div class="Polaris-Connected__Item Polaris-Connected__Item--primary">
+                                <div class="Polaris-TextField Polaris-TextField--hasValue">
+                                    <input id="txtHighEngagementThreshold" autocomplete="email" class="Polaris-TextField__Input"
+                                           type="email" aria-describedby="PolarisTextField1HelpText"
+                                           aria-labelledby="PolarisTextField1Label" aria-invalid="false"
+                                           value="{{ re2shop.re2_high_engagement_threshold }}">
+                                    <div class="Polaris-TextField__Backdrop">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Polaris-Labelled__HelpText" id="PolarisTextField1HelpText">
+    <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular Polaris-Text--break Polaris-Text--subdued">
+        This value is the number of actions establishing a user as 'highly engaged' (your best customers)
+        for the purposes of inclusion in the engagement model.
+    </span>
+                        </div>
+
+                    </div>
+                    <div class="Polaris-Stack__Item">
+
+                        <div class="Polaris-Labelled__LabelWrapper">
+                            <div class="Polaris-Label">
+                                <label id="PolarisTextField1Label" for="txtEventRelevanceDecay" class="Polaris-Label__Text">
+                                    <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular">Event Relevance Decay</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="Polaris-Connected">
+                            <div class="Polaris-Connected__Item Polaris-Connected__Item--primary">
+                                <div class="Polaris-TextField Polaris-TextField--hasValue">
+                                    <input id="txtEventRelevanceDecay" autocomplete="email" class="Polaris-TextField__Input"
+                                           type="email" aria-describedby="PolarisTextField1HelpText"
+                                           aria-labelledby="PolarisTextField1Label" aria-invalid="false"
+                                           value="{{ re2shop.re2_event_relevance_decay }}">
+                                    <div class="Polaris-TextField__Backdrop">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Polaris-Labelled__HelpText" id="PolarisTextField1HelpText">
+    <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular Polaris-Text--break Polaris-Text--subdued">
+        This value is the number of days for events to lose half their weight (also called event half-life),
+        implemented as a decay curve over time. This value is used to account for recency relevance so newer
+        actions can carry extra weight in calculations.
+    </span>
+                        </div>
+
+                    </div>
+                    <div class="Polaris-Stack__Item">
+
+
+                        <div class="Polaris-Labelled__LabelWrapper">
+                            <div class="Polaris-Label">
+                                <label id="PolarisTextField1Label" for="txtActionWeightFloor" class="Polaris-Label__Text">
+                                    <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular">Action Weight Floor</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="Polaris-Connected">
+                            <div class="Polaris-Connected__Item Polaris-Connected__Item--primary">
+                                <div class="Polaris-TextField Polaris-TextField--hasValue">
+                                    <input id="txtActionWeightFloor" autocomplete="email" class="Polaris-TextField__Input"
+                                           type="email" aria-describedby="PolarisTextField1HelpText"
+                                           aria-labelledby="PolarisTextField1Label" aria-invalid="false"
+                                           value="{{ re2shop.re2_action_weight_floor }}">
+                                    <div class="Polaris-TextField__Backdrop">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="Polaris-Labelled__HelpText" id="PolarisTextField1HelpText">
+    <span class="Polaris-Text--root Polaris-Text--bodyMd Polaris-Text--regular Polaris-Text--break Polaris-Text--subdued">
+        This value is the minimum user action recommendation weight required for actions
+        to be included in the final recommendations. Higher numbers bring higher confidence
+        in the recommendations but also limit the number of recommendations provided.
+    </span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="Polaris-Card__Section">
+                <button class="Polaris-Button Polaris-Button--primary Polaris-Button--disabled"
+                        type="button" id="btnSubmitProgramChanges">
+  <span class="Polaris-Button__Content">
+    <span class="Polaris-Button__Text">Save Changes</span>
+  </span>
+</button>
+
+            </div>
         </div>
 
-        <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingTight">
-            <div class="Polaris-Stack__Item">
-                <div class="Polaris-Banner Polaris-Banner--hasDismiss Polaris-Banner--withinPage" tabindex="0"
-                     role="status" aria-live="polite" aria-labelledby="PolarisBanner1Heading"
-                     aria-describedby="PolarisBanner1Content">
-                    <div class="Polaris-Banner__Dismiss">
+
+    </div>
+
+    <div class="Polaris-Layout__Section  Polaris-Layout__Section--oneHalf">
+
+
+        <div class="Polaris-Card">
+            <div class="Polaris-Card__Header">
+                <h2 class="Polaris-Text--root Polaris-Text--headingMd Polaris-Text--semibold">Advanced: RE2 Program
+                    Access Information</h2>
+            </div>
+            <div class="Polaris-Card__Section">
+
+                <p>This information is for technical users looking to use RE2 to integrate
+                    their Shopify targeting recommendations to other marketing automation systems.
+                    Learn more infomration about the RE2 API and integrated systems at
+                    <a class="Polaris-Link" href="https://api.re2.live/" target="_blank">https://api.re2.live/</a>
+                    Connect to the RE2 API using the credentials below.
+                </p>
+
+            </div>
+            <div class="Polaris-Card__Section">
+                <div class="Polaris-Card__SectionHeader">
+                    <h3 class="Polaris-Text--root Polaris-Text--headingSm Polaris-Text--semibold">Your RE2 Program
+                        ID</h3>
+                </div>
+                <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingTight">
+                    <div class="Polaris-Stack__Item">
+                        <div class="Polaris-Banner Polaris-Banner--hasDismiss Polaris-Banner--withinPage" tabindex="0"
+                             role="status" aria-live="polite" aria-labelledby="PolarisBanner1Heading"
+                             aria-describedby="PolarisBanner1Content">
+                            <div class="Polaris-Banner__ContentWrapper">
+                                <div class="Polaris-Banner__Content" id="PolarisBanner2Content">
+                                    <p>{{re2shop.re2_program_id}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Polaris-Stack__Item">
+                        <p>Use your program ID (along with the api_key below)
+                            when connecting to the RE2 systems outside of Shopify.</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="Polaris-Card__Section">
+                <div class="Polaris-Card__SectionHeader">
+                    <h3 class="Polaris-Text--root Polaris-Text--headingSm Polaris-Text--semibold">Your RE2 API Key</h3>
+                </div>
+
+                <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingTight">
+                    <div class="Polaris-Stack__Item">
+                        <div class="Polaris-Banner Polaris-Banner--withinPage" tabindex="0"
+                             role="status" aria-live="polite" aria-labelledby="PolarisBanner1Heading"
+                             aria-describedby="PolarisBanner1Content">
+                            <div class="Polaris-Banner__ContentWrapper">
+                                <div class="Polaris-Banner__Content" id="PolarisBanner1Content">
+                                    <p>{{re2shop.re2_api_key}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Polaris-Stack__Item">
                         <button class="Polaris-Button Polaris-Button--sizeSlim" type="button"
                                 onclick="alert('not implemented');">
                   <span class="Polaris-Button__Content">
-                    <span class="Polaris-Button__Text">Generate New Key</span>
+                    <span class="Polaris-Button__Text">Replace API Key</span>
                   </span>
                         </button>
                     </div>
-                    <div class="Polaris-Banner__ContentWrapper">
-                        <div class="Polaris-Banner__Content" id="PolarisBanner1Content">
-                            <p>{{re2shop.re2_api_key}}</p>
-                        </div>
+
+                    <div class="Polaris-Stack__Item">
+                        <p>Keep this access key secret.</p>
                     </div>
                 </div>
+
             </div>
-            <div class="Polaris-Stack__Item">
-                <p>Keep this access key secret. ( TODO: allow shop owners to generate a new key. )</p>
-            </div>
+
         </div>
 
-    </div>
-    <div class="Polaris-Card__Section">
-        <div class="Polaris-Card__SectionHeader">
-            <h3 class="Polaris-Text--root Polaris-Text--headingSm Polaris-Text--semibold">Your RE2 Program ID</h3>
-        </div>
-        <div class="Polaris-Stack Polaris-Stack--vertical Polaris-Stack--spacingTight">
-            <div class="Polaris-Stack__Item">
-                <div class="Polaris-Banner Polaris-Banner--hasDismiss Polaris-Banner--withinPage" tabindex="0"
-                     role="status" aria-live="polite" aria-labelledby="PolarisBanner1Heading"
-                     aria-describedby="PolarisBanner1Content">
-                    <div class="Polaris-Banner__ContentWrapper">
-                        <div class="Polaris-Banner__Content" id="PolarisBanner2Content">
-                            <p>{{re2shop.re2_program_id}}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="Polaris-Stack__Item">
-                <p>Use your program ID (along with the api_key below)
-                    when connecting to the RE2 systems outside of Shopify.</p>
-            </div>
-        </div>
 
     </div>
 </div>
-</div>
-
-
-
-

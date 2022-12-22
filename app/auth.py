@@ -12,7 +12,7 @@ from shopify import session_token
 
 from app import config
 from app import dao
-from app import shops
+from app import programs
 
 # https://shopify.dev/apps/auth/oauth/getting-started
 
@@ -50,7 +50,7 @@ def get_session_from_client_token(request: Request):
         raise HTTP_401_UNAUTHORIZED
 
     # not sure why the shop has the protocol prefix in this case
-    shop = decoded_session_token.get("dest").replace("https://", "")
+    shop_name = decoded_session_token.get("dest").replace("https://", "")
     try:
         access_token, status = shop_access_tokens[shop], 200
     except KeyError:
@@ -59,7 +59,7 @@ def get_session_from_client_token(request: Request):
         if status != 200:
             raise AccessTokenNotFound
 
-    return shopify.Session(shop, config.API_VERSION, access_token)
+    return shopify.Session(shop_name, config.API_VERSION, access_token)
 
 
 def verify_shop_access(request: Request):
@@ -69,7 +69,7 @@ def verify_shop_access(request: Request):
     an access token.
     """
     # will be appended if needed when checking resource below
-    scopes = shops.SCOPES_STAGE_1
+    scopes = programs.SCOPES_STAGE_1
 
     query_params = dict(request.query_params)
     try:
@@ -97,7 +97,7 @@ def verify_shop_access(request: Request):
                 return session
 
             new_scope = request.url.path.replace("/scope/", "")
-            re2shop = shops.Re2Shop(shop_name)
+            re2shop = programs.Re2Shop(shop_name)
             if new_scope in re2shop.permissions:
                 # out token already has the scope, so carry on
                 return session

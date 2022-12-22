@@ -17,8 +17,9 @@ from typing import Union
 
 from app import config
 from app import auth
-from app import shops
+from app import programs
 from app import graphql_queries
+from app import models
 
 from shopify import session_token
 
@@ -57,8 +58,8 @@ async def home(
     )
 
 
-@app.get('/re2/program')
-async def get_re2_program(
+@app.get('/program')
+async def get_program(
         request: Request,
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
     """
@@ -66,13 +67,31 @@ async def get_re2_program(
     """
     shopify.ShopifyResource.activate_session(session)
     shop_name = session.url
-    re2shop = shops.Re2Shop(shop_name)
+    re2shop = programs.Re2Shop(shop_name)
     re2shop.load()
     template_file = "re2_program_details.html"
     return templates.TemplateResponse(
         template_file, {"request": request, "re2shop": re2shop}
     )
 
+
+@app.put('/program')
+async def put_program(
+        program: models.ProgramConfiguration,
+        session: shopify.Session = Depends(auth.get_session_from_client_token)):
+    """
+    Return the HTML with program details
+    """
+    # TODO: add some error handling
+    shopify.ShopifyResource.activate_session(session)
+    shop_name = session.url
+    re2shop = programs.Re2Shop(shop_name)
+    re2shop.load()
+    re2shop.re2_high_engagement_threshold = program.high_engagement_threshold
+    re2shop.re2_event_relevance_decay = program.event_relevance_decay
+    re2shop.re2_action_weight_floor = program.action_weight_floor
+    re2shop.save_program()
+    return {"status": "success"}
 
 
 @app.put("/product/assets")
@@ -85,7 +104,7 @@ async def refresh_product_assets(
     shopify.ShopifyResource.activate_session(session)
     shop_name = session.url
 
-    re2shop = shops.use_shop(shop_name)
+    re2shop = programs.use_shop(shop_name)
     #if "read_product_listings" not in re2shop.permissions:
        # auth.send_request_permission_redirect(request, "read_product_listings")
 
@@ -95,7 +114,6 @@ async def refresh_product_assets(
 # TODO: turn this into the "populate re2 method"
 @app.get("/test_client")
 async def test_client(
-        request: Request,
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
     shopify.ShopifyResource.activate_session(session)
     # do something here...
@@ -211,15 +229,15 @@ async def auth_callback(
     access_token = session.request_token(query_params)
     scopes = str(session.access_scopes).split(',')
 
-    re2shop = shops.Re2Shop(shop_name)
+    re2shop = programs.Re2Shop(shop_name)
     try:
         re2shop.load()
         auth.save_shop_access_token(
             shop_name,
             access_token,
             scopes)
-    except shops.ShopNotFound:
-        re2shop = shops.Re2Shop.new(shop_name, scopes)
+    except programs.Re2ShopNotFound:
+        re2shop = programs.Re2Shop.new(shop_name, scopes)
         re2shop.add()
 
     # Now that we have the token stored we will redirect
