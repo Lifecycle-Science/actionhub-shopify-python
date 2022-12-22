@@ -8,33 +8,33 @@ from app import config
 
 SCOPES_STAGE_1 = ['read_products', 'read_orders']
 
-shops = {}
+programs = {}
 
 
-def use_shop(shop_name):
+def use_program(shop_name):
     """
     Keeps in memory collection of shops for easy access.
     """
-    if shop_name not in shops:
+    if shop_name not in programs:
         program_shopify = ProgramShopify(shop_name)
         program_shopify.load()
-        shops[shop_name] = program_shopify
-    return shops[shop_name]
+        programs[shop_name] = program_shopify
+    return programs[shop_name]
 
 
 class ProgramShopify:
 
     ts_added: int = 0
     ts_updated: int = 0
-    re2_program_id: str = ""
+    program_id: str = ""
     re2_api_key: str = ""
     permissions: [str] = []
 
-    re2_high_engagement_threshold: int = 0
-    re2_event_relevance_decay: int = 0
-    re2_action_weight_floor: float = 0
-    re2_program_name: str = ""
-    re2_description: str = ""
+    high_engagement_threshold: int = 0
+    event_relevance_decay: int = 0
+    action_weight_floor: float = 0
+    program_name: str = ""
+    description: str = ""
 
     loaded: bool = False
 
@@ -49,52 +49,71 @@ class ProgramShopify:
         if shop:
             self.ts_added = shop["ts_added"]
             self.ts_updated = shop["ts_updated"]
-            self.re2_program_id = shop["re2_program_id"]
+            self.program_id = shop["program_id"]
             self.re2_api_key = shop["re2_api_key"]
             self.permissions = shop["permissions"]
         else:
             raise Re2ShopNotFound
 
         r = requests.get(
-            url=config.RE2_API_HOST + "/program/config",
+            url=config.RE2_API_HOST + "/program",
             headers=self._api_headers())
 
         if r.status_code == 404:
             raise Re2ProgramNotFound
 
         program = json.loads(r.text)
-        print(program)
-        self.re2_high_engagement_threshold = program["high_engagement_threshold"]
-        self.re2_event_relevance_decay = program["event_relevance_decay"]
-        self.re2_action_weight_floor = program["action_weight_floor"]
-        self.re2_program_name = program["program_name"]
-        self.re2_description = program["description"]
+        self.high_engagement_threshold = program["high_engagement_threshold"]
+        self.event_relevance_decay = program["event_relevance_decay"]
+        self.action_weight_floor = program["action_weight_floor"]
+        self.program_name = program["program_name"]
+        self.description = program["description"]
         self.loaded = True
 
-    def add_events(self):
-        pass
-
-    def update_assets(self):
-        pass
-
-    def save_program(self):
+    def add_events(self, events: [dict]):
+        """
+        Sends array of events to the RE2 API for inserts
+        """
         if not self.loaded:
-            self.load()
+            raise Re2ShopNotLoaded
+
+        r = requests.put(
+            url=config.RE2_API_HOST + "/events",
+            data=json.dumps(events),
+            headers=self._api_headers())
+        print(r.text)
+
+    def update_assets(self, assets: [dict]):
+        """
+        Sends array of assets to the RE2 API for upsert.
+        """
+        if not self.loaded:
+            raise Re2ShopNotLoaded
+
+        r = requests.put(
+            url=config.RE2_API_HOST + "/events",
+            data=json.dumps(assets),
+            headers=self._api_headers())
+        print(r.text)
+
+    def save(self):
+        if not self.loaded:
+            raise Re2ShopNotLoaded
 
         body = {
-            "program_id": self.re2_program_id,
-            "program_name": self.re2_program_name,
-            "high_engagement_threshold": self.re2_high_engagement_threshold,
-            "event_relevance_decay":  self.re2_event_relevance_decay,
-            "action_weight_floor": self.re2_action_weight_floor
+            "program_id": self.program_id,
+            "program_name": self.program_name,
+            "high_engagement_threshold": self.high_engagement_threshold,
+            "event_relevance_decay":  self.event_relevance_decay,
+            "action_weight_floor": self.action_weight_floor
         }
         r = requests.put(
-            url=config.RE2_API_HOST + "/program/config",
+            url=config.RE2_API_HOST + "/program",
             data=json.dumps(body),
             headers=self._api_headers())
         print(r.text)
 
-    def add_scope(self, scope):
+    def add_shopify_scope(self, scope):
         """
         Add/save new scope to the permission.
         This should only happen after we've gotten merchant permission
@@ -138,12 +157,12 @@ class ProgramShopify:
 
         program = json.loads(r.text)
 
-        self.re2_program_id = program["program_id"]
+        self.program_id = program["program_id"]
         self.re2_api_key = program["api_key"]
 
         dao.create_ix_shop(
             shop_name=self.shop_name,
-            re2_program_id=self.re2_program_id,
+            program_id=self.program_id,
             re2_api_key=self.re2_api_key,
             permissions=self.permissions
         )
@@ -156,12 +175,16 @@ class ProgramShopify:
         """
         return {
             "access_token": self.re2_api_key,
-            "program-id": self.re2_program_id,
+            "program-id": self.program_id,
             "Content-Type": "application/json"
         }
 
 
 class Re2ShopNotFound(Exception):
+    pass
+
+
+class Re2ShopNotLoaded(Exception):
     pass
 
 

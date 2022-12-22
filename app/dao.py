@@ -27,7 +27,7 @@ def select_shop(shop_name):
     cur.execute("""
         select shop_name, 
             ts_added, ts_updated,
-            re2_program_id, re2_api_key,
+            program_id, re2_api_key,
             permissions
         from re2_ix_shopify.dim_shops 
         where shop_name = %s
@@ -38,7 +38,7 @@ def select_shop(shop_name):
 
 
 def create_ix_shop(shop_name,
-                re2_program_id,
+                program_id,
                 re2_api_key,
                 permissions):
     """
@@ -49,12 +49,12 @@ def create_ix_shop(shop_name,
     cur.execute("""
         insert into re2_ix_shopify.dim_shops (
             shop_name, 
-            re2_program_id,
+            program_id,
             re2_api_key,
             permissions)
         values (%s, %s, %s, %s)
     """, [shop_name,
-          re2_program_id,
+          program_id,
           re2_api_key,
           permissions])
     conn.commit()

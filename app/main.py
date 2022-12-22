@@ -87,10 +87,10 @@ async def put_program(
     shop_name = session.url
     program_shopify = programs.ProgramShopify(shop_name)
     program_shopify.load()
-    program_shopify.re2_high_engagement_threshold = program.high_engagement_threshold
-    program_shopify.re2_event_relevance_decay = program.event_relevance_decay
-    program_shopify.re2_action_weight_floor = program.action_weight_floor
-    program_shopify.save_program()
+    program_shopify.high_engagement_threshold = program.high_engagement_threshold
+    program_shopify.event_relevance_decay = program.event_relevance_decay
+    program_shopify.action_weight_floor = program.action_weight_floor
+    program_shopify.save()
     return {"status": "success"}
 
 
@@ -104,7 +104,7 @@ async def refresh_product_assets(
     shopify.ShopifyResource.activate_session(session)
     shop_name = session.url
 
-    program_shopify = programs.use_shop(shop_name)
+    program_shopify = programs.use_program(shop_name)
     #if "read_product_listings" not in program_shopify.permissions:
        # auth.send_request_permission_redirect(request, "read_product_listings")
 
