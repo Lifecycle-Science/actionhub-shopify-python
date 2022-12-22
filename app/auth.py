@@ -52,10 +52,10 @@ def get_session_from_client_token(request: Request):
     # not sure why the shop has the protocol prefix in this case
     shop_name = decoded_session_token.get("dest").replace("https://", "")
     try:
-        access_token, status = shop_access_tokens[shop], 200
+        access_token, status = shop_access_tokens[shop_name], 200
     except KeyError:
         # get from the database if we need to
-        access_token, status = dao.get_shop_access_token(shop)
+        access_token, status = dao.get_shop_access_token(shop_name)
         if status != 200:
             raise AccessTokenNotFound
 
