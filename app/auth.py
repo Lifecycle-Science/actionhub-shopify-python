@@ -97,8 +97,8 @@ def verify_shop_access(request: Request):
                 return session
 
             new_scope = request.url.path.replace("/scope/", "")
-            re2shop = programs.Re2Shop(shop_name)
-            if new_scope in re2shop.permissions:
+            program_shopify = programs.ProgramShopify(shop_name)
+            if new_scope in program_shopify.permissions:
                 # out token already has the scope, so carry on
                 return session
 

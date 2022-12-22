@@ -16,13 +16,13 @@ def use_shop(shop_name):
     Keeps in memory collection of shops for easy access.
     """
     if shop_name not in shops:
-        re2shop = Re2Shop(shop_name)
-        re2shop.load()
-        shops[shop_name] = re2shop
+        program_shopify = ProgramShopify(shop_name)
+        program_shopify.load()
+        shops[shop_name] = program_shopify
     return shops[shop_name]
 
 
-class Re2Shop:
+class ProgramShopify:
 
     ts_added: int = 0
     ts_updated: int = 0

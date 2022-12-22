@@ -33,7 +33,7 @@ def extract_shopify_events(shop_name):
     """
     # TODO: needs some paging so we don't overload the RE2 server
     # TODO: needs some filtering so we only get what we need
-    re2_shop = programs.Re2Shop(shop_name)
+    program_shopify = programs.ProgramShopify(shop_name)
     session = get_shop_session(shop_name)
     shopify.ShopifyResource.activate_session(session)
 
