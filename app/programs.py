@@ -77,7 +77,7 @@ class ProgramShopify:
         if not self.loaded:
             raise Re2ShopNotLoaded
 
-        r = requests.put(
+        r = requests.post(
             url=config.RE2_API_HOST + "/events",
             data=json.dumps(events),
             headers=self._api_headers())

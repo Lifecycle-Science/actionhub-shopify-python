@@ -34,6 +34,8 @@ def extract_shopify_events(shop_name):
     # TODO: needs some paging so we don't overload the RE2 server
     # TODO: needs some filtering so we only get what we need
     program_shopify = programs.ProgramShopify(shop_name)
+    program_shopify.load()
+
     session = get_shop_session(shop_name)
     shopify.ShopifyResource.activate_session(session)
 
@@ -67,7 +69,8 @@ def extract_shopify_events(shop_name):
                 "user_id": str(customer_id),
                 "event_timestamp": created_at,
                 "event_type": "order",
-                "asset_id": str(product_id)
+                "asset_id": str(product_id),
+                "labels": []
             })
 
         query = graphql_queries.get_order_customer_journey_gql
@@ -83,7 +86,8 @@ def extract_shopify_events(shop_name):
                 "user_id": str(customer_id),
                 "event_timestamp": created_at,
                 "event_type": "visit",
-                "asset_id": first_lp
+                "asset_id": first_lp,
+                "labels": []
             })
         if customer_journey["lastVisit"]:
             last_lp = customer_journey["lastVisit"]["landingPage"]
@@ -91,13 +95,13 @@ def extract_shopify_events(shop_name):
                 "user_id": str(customer_id),
                 "event_timestamp": created_at,
                 "event_type": "visit",
-                "asset_id": last_lp
+                "asset_id": last_lp,
+                "labels": []
             })
 
+    program_shopify.add_events(events)
+
     return {"events": events, "assets": assets}
-
-
-
 
 
 def get_shop_session(shop_name):
