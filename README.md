@@ -4,11 +4,13 @@
 
 This app does not use the Shopify CLI, rather it relies heavily on https://github.com/Shopify/shopify_python_api. The backend uses FastAPI (https://github.com/tiangolo/fastapi). The front end uses then environments (window) Shopify AppBridge with vanilla JavaScript.
 
-## Event Types
+## How Shopify Data is Used In RE2
+
+### Event Types
 
 The Shopify app reports two kinds of events: "orders" and "views"
 
-### "Order" Event Types
+#### "Order" Event Types
 
 Order events are obtained from Shopify via the `orders = shopify.Order.find()` method.
 At this time the Shopify order instance does not contain any values to be used as labels. 
@@ -23,7 +25,7 @@ The "order" event mappings are below:
 | `labels` | `[]` |
 
 
-### View Event Types
+#### View Event Types
 
 View events are obtained from `customerJourneySummary` data contained in the `order` object.
 Specifically, the first and last landing page visits are recorded as "view" events.
