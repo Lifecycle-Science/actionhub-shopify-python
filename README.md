@@ -8,6 +8,8 @@ This app does not use the Shopify CLI, rather it relies heavily on https://githu
 
 ### Event Types
 
+**RE2 does not read (or store) any Shopify or merchant customer data except customer_id and the metafields created by RE2 to store recommended actions.**
+
 The Shopify app reports two kinds of events: "orders" and "views"
 
 #### "Order" Event Types
