@@ -26,13 +26,14 @@ The "order" event mappings are below:
 ### View Event Types
 
 View events are obtained from `customerJourneySummary` data contained in the `order` object.
-Specifically, the first and last landing pages are recorded as "view" events.
-The "view" event mappings are below:
+Specifically, the first and last landing page visits are recorded as "view" events.
+These two visits are referenced `customerVisit` objecs from either the `customer_journey["firstVisit"]` or
+`customer_journey["lastVisit"]` values. The "view" event mappings are below:
 
 | RE2 Event Field | Shopify Order Field |
 | --- | --- |
 | `user_id` | `order.customer_id` |
-| `event_timestamp` |  `customer_journey["firstVisit"]["occurredAt"]` or `customer_journey["lastVisit"]["occurredAt"]`  |
+| `event_timestamp` |  `customerVisit["occurredAt"]` |
 | `event_type` | "visit" |
-| `asset_id` | `customer_journey["firstVisit"]["landingPage"]` or `customer_journey["lastVisit"]["landingPage"]` |
+| `asset_id` | `customerVisit["landingPage"]` |
 | `labels` | `[]` |
