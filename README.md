@@ -32,7 +32,7 @@ The "view" event mappings are below:
 | RE2 Event Field | Shopify Order Field |
 | --- | --- |
 | `user_id` | `order.customer_id` |
-| `event_timestamp` | `order.created_at` |
+| `event_timestamp` |  `customer_journey["firstVisit"]["occurredAt"]` or `customer_journey["lastVisit"]["occurredAt"]`  |
 | `event_type` | "visit" |
 | `asset_id` | `customer_journey["firstVisit"]["landingPage"]` or `customer_journey["lastVisit"]["landingPage"]` |
 | `labels` | `[]` |
