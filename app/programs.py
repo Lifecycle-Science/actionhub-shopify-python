@@ -2,11 +2,13 @@ import json
 import time
 import datetime
 import requests
+import shopify
 from app import dao
 from app import config
+from app import graphql_queries
 
 
-SCOPES_STAGE_1 = ['read_products', 'read_orders']
+SCOPES_STAGE_1 = ['read_products', 'read_orders', 'read_customers', 'write_customers']
 
 programs = {}
 

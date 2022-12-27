@@ -1,27 +1,19 @@
 import base64
 import json
 from urllib.parse import parse_qs
-import binascii
-import os
-import shopify
 from fastapi import FastAPI, Request, Response
+from fastapi import Depends
 from fastapi.responses import RedirectResponse
-from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from fastapi import Depends, HTTPException, Query, Header, BackgroundTasks
-from starlette.status import HTTP_307_TEMPORARY_REDIRECT
-
-from typing import Union
+import shopify
 
 from app import config
 from app import auth
 from app import programs
 from app import graphql_queries
 from app import models
-
-from shopify import session_token
 
 
 app = FastAPI()

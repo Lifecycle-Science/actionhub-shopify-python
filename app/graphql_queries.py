@@ -20,3 +20,21 @@ get_order_customer_journey_gql = """
         }}
     }}
     """
+
+create_customer_metafield_gql = """
+    mutation CreateMetafieldDefinition($definition: MetafieldDefinitionInput!) {
+      metafieldDefinitionCreate(definition: $definition) {
+        createdDefinition {
+          id
+          name
+          namespace
+          key
+        }
+        userErrors {
+          field
+          message
+          code
+        }
+      }
+    }
+"""
