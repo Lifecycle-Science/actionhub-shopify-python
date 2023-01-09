@@ -5,12 +5,11 @@ execute the longer running processes outside of the API threads.
 
 Same code base, two launch points:
 1. main.py - starts the api listener
-2. backine.py - starts the batch listener
+2. backline.py - starts the batch listener
 """
+import boto3
 
 import json
-
-from pyactiveresource import connection
 import shopify
 
 from app import programs
