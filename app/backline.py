@@ -50,9 +50,9 @@ def listenter():
 def extract_shopify_events(shop_name):
     """
     Builds arrays of events and assets for the shop to
-    add to RE2.
+    add to ActionHub.
     """
-    # TODO: needs some paging so we don't overload the RE2 server
+    # TODO: needs some paging so we don't overload the ActionHub server
     # TODO: needs some filtering so we only get what we need
     program_shopify = programs.ProgramShopify(shop_name)
     program_shopify.load()
@@ -143,14 +143,14 @@ def update_customer_metafield(shop_name):
     #     'key': 'test_key',
     #     'value': 'test_value,test_value2',
     #     'value_type': 'list.single_line_text_field',
-    #     'namespace': 're2'})
+    #     'namespace': 'actionhub'})
     # )
     # customer.save()
 
     # print(customer.metafields)
     #
     # customer.metafields = [{
-    #     "key": "re2-action",
+    #     "key": "actionhub-action",
     #     "value": "newvalue",
     #     "type": "text",
     #     "namespace": "custom"
@@ -161,7 +161,7 @@ def update_customer_metafield(shop_name):
 
 def create_shopify_metafield_defs(shop_name):
     """
-    Creates the customer metafields which will contain the RE2 outputs
+    Creates the customer metafields which will contain the ActionHub outputs
     """
     session = get_shop_session(shop_name)
     shopify.ShopifyResource.activate_session(session)
@@ -170,10 +170,10 @@ def create_shopify_metafield_defs(shop_name):
     result = shopify.GraphQL().execute(
         query=query,
         variables={"definition": {
-            "name": "RE2 Order Actions",
-            "namespace": "re2",
+            "name": "ActionHub Order Actions",
+            "namespace": "actionhub",
             "key": "order_actions",
-            "description": "[DO NOT EDIT - required for RE2] A list of recommended product order actions.",
+            "description": "[DO NOT EDIT - required for ActionHub] A list of recommended product order actions.",
             "type": "list.single_line_text_field",
             "ownerType": "CUSTOMER"
         }}
@@ -182,10 +182,10 @@ def create_shopify_metafield_defs(shop_name):
     result = shopify.GraphQL().execute(
         query=query,
         variables={"definition": {
-            "name": "RE2 Landing Page Actions",
-            "namespace": "re2",
+            "name": "ActionHub Landing Page Actions",
+            "namespace": "actionhub",
             "key": "landing_page_actions",
-            "description": "[DO NOT EDIT - required for RE2] A list of recommended landing page view actions.",
+            "description": "[DO NOT EDIT - required for ActionHub] A list of recommended landing page view actions.",
             "type": "list.single_line_text_field",
             "ownerType": "CUSTOMER"
         }}
@@ -194,10 +194,10 @@ def create_shopify_metafield_defs(shop_name):
     result = shopify.GraphQL().execute(
         query=query,
         variables={"definition": {
-            "name": "RE2 Label Preferences",
-            "namespace": "re2",
+            "name": "ActionHub Label Preferences",
+            "namespace": "actionhub",
             "key": "label_preferences",
-            "description": "[DO NOT EDIT - required for RE2] A list of preferred labels.",
+            "description": "[DO NOT EDIT - required for ActionHub] A list of preferred labels.",
             "type": "list.single_line_text_field",
             "ownerType": "CUSTOMER"
         }}

@@ -11,7 +11,7 @@ SHOPIFY_SECRET = config_local.SHOPIFY_SECRET
 AUTH_CALLBACK_URL = config_local.AUTH_CALLBACK_URL
 API_VERSION = "2022-07"
 
-# RE2 credentials
+# ActionHub credentials
 RE2_ADMIN_API_KEY = config_local.RE2_ADMIN_API_KEY
 RE2_ADMIN_API_PROGRAM = config_local.RE2_ADMIN_API_PROGRAM
 

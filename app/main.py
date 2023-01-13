@@ -91,7 +91,7 @@ async def refresh_product_assets(
         request: Request,
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
     """
-    Update the RE2 assets with the latest products
+    Update the ActionHub assets with the latest products
     """
     shopify.ShopifyResource.activate_session(session)
     shop_name = session.url
@@ -103,7 +103,7 @@ async def refresh_product_assets(
     pass
 
 
-# TODO: turn this into the "populate re2 method"
+# TODO: turn this into the "populate actionhub method"
 @app.get("/test_client")
 async def test_client(
         session: shopify.Session = Depends(auth.get_session_from_client_token)):
@@ -281,7 +281,7 @@ def shopify_app_url(query_params):
 
 
 def disembedded_app_url(request, resource="/"):
-    """Returns the RE2 url without the "embedded" flag so can
+    """Returns the ActionHub url without the "embedded" flag so can
     do an auth redirect if necessary.
     """
     query_params_in = dict(request.query_params)

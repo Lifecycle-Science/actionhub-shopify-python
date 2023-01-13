@@ -74,7 +74,7 @@ class ProgramShopify:
 
     def add_events(self, events: [dict]):
         """
-        Sends array of events to the RE2 API for inserts
+        Sends array of events to the ActionHub API for inserts
         """
         if not self.loaded:
             raise Re2ShopNotLoaded
@@ -87,7 +87,7 @@ class ProgramShopify:
 
     def update_assets(self, assets: [dict]):
         """
-        Sends array of assets to the RE2 API for upsert.
+        Sends array of assets to the ActionHub API for upsert.
         """
         if not self.loaded:
             raise Re2ShopNotLoaded
@@ -140,7 +140,7 @@ class ProgramShopify:
 
     def add(self):
         """
-        Create the RE2 program (same as the shop. i.e. one shop = one program)
+        Create the ActionHub program (same as the shop. i.e. one shop = one program)
         """
         if self.loaded:
             raise Re2ShopAlreadyExists
@@ -172,7 +172,7 @@ class ProgramShopify:
 
     def _api_headers(self):
         """
-        Returns headers for calls to the RE2 api
+        Returns headers for calls to the ActionHub api
         (Does not include initial admin api call.
         """
         return {
